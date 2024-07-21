@@ -1,0 +1,73 @@
+const Todo = require("../models/todoModel")
+
+const getTodos = async (req, res) => {
+  const Todos = await Todo.find()
+  if (!Todos) {
+    res.status(404)
+    res.json({
+      msg: "Todo Not Found"
+    })
+  }
+  res.status(200)
+  res.json(Todos)
+}
+// ========================================================
+
+const getTodo = async (req, res) => {
+  const todo = await Todo.findById(req.params.id)
+  if (!todo) {
+    res.status(404)
+    res.json({
+      error: " Todo Not Found!!"
+    })
+  }
+  res.status(200).json(todo)
+
+}
+
+// ========================================================
+
+const putTodo = async (req, res) => {
+  const Updatedtodo = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  if (!Updatedtodo) {
+    res.status(400).json({
+      error: "Todo Not Updated"
+    })
+  }
+  res.status(200).json(Updatedtodo)
+}
+
+// ========================================================
+const postTodo = async (req, res) => {
+
+  const { title, description, isCompleted } = req.body;
+
+  if (!title || !description) {
+    res.status(400);
+    res.json({
+      error: "please Fill All Details"
+    })
+  }
+  const todo = await Todo.create({
+    title,
+    description,
+    isCompleted
+  })
+  if (!todo) {
+    res.status(400)
+    res.json({
+      error: " Todo Not Created"
+    })
+  }
+
+  res.status(201).json(todo)
+}
+// ========================================================
+const deleteTodo = async (req, res) => {
+  await Todo.findByIdAndDelete(req.params.id)
+  res.status(200).json({
+    msg: " Todo Deleted!"
+  })
+}
+
+module.exports = { getTodos, getTodo, postTodo, putTodo, deleteTodo }
